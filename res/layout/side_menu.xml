@@ -1,0 +1,16 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView android:layout_width="wrap_content" android:layout_height="match_parent" android:id="@+id/scrollView1">
+        <LinearLayout android:id="@+id/linearLayout1" android:layout_height="match_parent" android:layout_width="wrap_content" android:orientation="vertical" android:layout_gravity="fill">
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton1" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton2" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton3" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton4" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton5" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton6" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton7" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton8" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton9" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+            <ImageButton android:src="@drawable/icon" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/imageButton10" android:layout_gravity="center" android:clickable="true" android:onClick="onSideMenuClick"></ImageButton>
+        </LinearLayout>
+    </ScrollView>
+</merge>
