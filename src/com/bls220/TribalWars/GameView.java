@@ -1,15 +1,18 @@
 package com.bls220.TribalWars;
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
-public class GameView extends SurfaceView implements SurfaceHolder.Callback
+import android.content.Context;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.util.AttributeSet;
+
+public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer
 {
-	public static int mWidth;
-	public static int mHeight;
-	public static GameThread mThread;
+	public static int mCurZ;
+	
+	private GameRenderer mRenderer;
 	
 	GameView(Context context)
 	{
@@ -23,55 +26,31 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 		init();
 	}
 	
-	GameView(Context context, AttributeSet attrs, int defStyle)
-	{
-		super(context,attrs,defStyle);
-		init();
-	}
-	
 	public void init()
 	{
-		getHolder().addCallback(this);
-		//Create Game Thread
-		mThread = new GameThread(this);
+		// Create an OpenGL ES 2.0 context
+		setEGLContextClientVersion(2);
+		mRenderer = new GameRenderer();
+		this.setRenderer(mRenderer);
 	}
 
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
-	{
-		mWidth = width;
-		mHeight = height;
-	}
-
-	@Override
-	public void surfaceCreated(SurfaceHolder holder)
-	{
-		if ( !mThread.isAlive() )
-		{
-			//Create and Start Game Thread
-			mThread = new GameThread(this);
-			mThread.setRunning(true);
-			mThread.start();
-		}
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder)
-	{
-		if ( mThread.isAlive() )
-		{
-			boolean retry = true;
-			//Stop Game Thread
-			mThread.setRunning(false);
-			while (retry)
-			{
-				try{
-					//Wait for thread to stop
-					mThread.join();
-					retry = false;
-				}catch (InterruptedException e){ /*Keep Retrying*/}
-			}
-		}
-	}
+//	@Override
+//	public void surfaceDestroyed(SurfaceHolder holder)
+//	{
+//		if ( mThread.isAlive() )
+//		{
+//			boolean retry = true;
+//			//Stop Game Thread
+//			mThread.setRunning(false);
+//			while (retry)
+//			{
+//				try{
+//					//Wait for thread to stop
+//					mThread.join();
+//					retry = false;
+//				}catch (InterruptedException e){ /*Keep Retrying*/}
+//			}
+//		}
+//	}
 
 }
