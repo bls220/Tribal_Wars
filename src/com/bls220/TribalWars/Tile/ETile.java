@@ -5,21 +5,31 @@ import android.graphics.Color;
 public enum ETile
 {
 	// id tile passable color
-	AIR		(0,0,1, 0),
-	GRASS	(1,1,1, Color.rgb(74, 139, 36)),
-	//DIRT	(2,1,1, Color.rgb(112, 83, 64));
-	DIRT	(2,1,1, Color.rgb(0,0,127));
+	AIR		(0, 1, 0),
+	GRASS	(1, 1, Color.rgb(74, 139, 36)),
+	//DIRT	(1, 1, Color.rgb(112, 83, 64));
+	DIRT	(1, 1, Color.rgb(0,0,127));
 	
-	ETile(int ID, int Tile, int Passable, int Overlay)
+	ETile(int Tile, int Passable, int Overlay)
 	{
-		this.id = (byte) (ID & 0xff);
-		this.base = Tile;
+		this.base = (byte)(Tile & 0xff);
 		this.passable = (Passable != 0);
 		this.overlay = Overlay;
+		
+		byte ID = 0;
+		for( ETile t : ETile.values() ){
+			if( t.base == this.base && t.passable == this.passable && t.overlay == this.overlay )
+				break;
+			ID++;	
+		}
+		
+		this.id = ID;
 	}
 	
+	public static ETile findByID(int ID){ return (ID>0) ? ETile.values()[ID] : AIR; }
+	
 	public final byte id;
-	public final int base;
+	public final byte base;
 	public final boolean passable;
 	public final int overlay;
 }

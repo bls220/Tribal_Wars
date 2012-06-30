@@ -1,2 +1,23 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:weightSum="10" android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/Layout" android:orientation="horizontal">
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <com.bls220.TribalWars.GameView
+        android:id="@+id/gameView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="fill"/>
+
+    <FrameLayout
+        android:id="@+id/menu_container"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:background="@null">
+
+		<include android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/side_menu" />
+
+	</FrameLayout>
+    
+    
+</RelativeLayout>

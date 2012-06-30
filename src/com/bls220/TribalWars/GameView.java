@@ -1,36 +1,33 @@
 package com.bls220.TribalWars;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
-import android.opengl.GLES20;
+import android.content.res.Resources;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
-public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer
+public class GameView extends GLSurfaceView
 {
 	public static int mCurZ;
 	
 	private GameRenderer mRenderer;
 	
-	GameView(Context context)
+	public GameView(Context context)
 	{
 		super(context);
-		init();
+		init(context.getResources());
 	}
 	
-	GameView(Context context, AttributeSet attrs)
+	public GameView(Context context, AttributeSet attrs)
 	{
 		super(context,attrs);
-		init();
+		init(context.getResources());
 	}
 	
-	public void init()
+	public void init(Resources res)
 	{
 		// Create an OpenGL ES 2.0 context
 		setEGLContextClientVersion(2);
-		mRenderer = new GameRenderer();
+		mRenderer = new GameRenderer(res);
 		this.setRenderer(mRenderer);
 	}
 

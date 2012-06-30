@@ -24,17 +24,17 @@ public class Tribal_Wars extends Activity
         //Hide Status Bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //Set Main view
-        LinearLayout mainLayout = new LinearLayout(this);
-        mainLayout.setOrientation(LinearLayout.HORIZONTAL);
-        mainLayout.setGravity(Gravity.FILL);
-        mainLayout.setWeightSum(10.0f);        
+        //LinearLayout mainLayout = new LinearLayout(this);
+        //mainLayout.setOrientation(LinearLayout.HORIZONTAL);
+        //mainLayout.setGravity(Gravity.FILL);
+        //mainLayout.setWeightSum(10.0f);        
         //add views to main view
         	//gameView
-        mGame = new GameView(this);
-        mainLayout.addView(mGame, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 9.0f));
+        //mGame = new GameView(this);
+        //mainLayout.addView(mGame, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 9.0f));
         	//sideMenu
-        LayoutInflater.from(this).inflate(R.layout.side_menu, mainLayout, true);
-        setContentView(mainLayout);
+        //LayoutInflater.from(this).inflate(R.layout.side_menu, mainLayout, true);
+        setContentView(R.layout.game);
     }
     
     @Override
@@ -82,6 +82,7 @@ public class Tribal_Wars extends Activity
 	public void onSideMenuClick( View v )
 	{
 		//TODO: Button Actions
+		this.findViewById(R.id.menu_container).setVisibility(View.GONE);
 	}
     
 }
