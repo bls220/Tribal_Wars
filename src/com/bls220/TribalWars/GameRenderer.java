@@ -1,28 +1,26 @@
 package com.bls220.TribalWars;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import com.bls220.TribalWars.Tile.Tileset;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.opengl.GLSurfaceView.Renderer;
+
+import com.bls220.TribalWars.Tile.Tile;
 
 public class GameRenderer implements Renderer {
 
 	public int mWidth;
 	public int mHeight;
 	private Resources mRes;
+	
+	private int mTextureUniformHandle; /** Used to pass texture to shader */
+	private int[] mTilesetHandle; /** Handle to Texture Data */
 	
 	/**
 	 * Store the model matrix. This matrix is used to move models from object space (where each model can be thought
@@ -41,85 +39,19 @@ public class GameRenderer implements Renderer {
 	
 	/** Allocate storage for the final combined matrix. This will be passed into the shader program. */
 	private float[] mMVPMatrix = new float[16];
-	
-	/** Store our model data in a float buffer. */
-	private final FloatBuffer mSquareVertices;
 
 	/** This will be used to pass in the transformation matrix. */
 	private int mMVPMatrixHandle;
 	
-	/** This will be used to pass in model position information. */
-	private int mPositionHandle;
+	private int mProgramHandle; /** Handle to compiled shader */
 	
-	/** This will be used to pass in model color information. */
-	private int mColorHandle;
-
-	/** How many bytes per float. */
-	private static final int mBytesPerFloat = 4;
-	
-	/** How many elements per vertex. */
-	private static final int mStrideBytes = 3 * mBytesPerFloat;	
-	
-	/** Offset of the position data. */
-	private static final int mPositionOffset = 0;
-	
-	/** Size of the position data in elements. */
-	private static final int mPositionDataSize = 3;
-	
-	/** Offset of the color data. */
-	private static final int mColorOffset = 12;
-	
-	/** Texture mapping data */
-	private final FloatBuffer mTextureMapData;
-	
-	/** Handle to Texture Data */
-	private int[] mTilesetHandle;
-	
-	/** Used to pass texture to shader */
-	private int mTextureUniformHandle;
-	
-	/** Used to pass texture coord info to shader */
-	private int mTextureCoordinateHandle;
-	
-	/** Size of Texture Coord. data */
-	private static final int mTextureCoordinateDataSize = 2;
-	
-	private static final float TILE_SIZE = 0.0625f;
+	private Tile test_tile;
 	
 	public GameRenderer(Resources res){
 		super();
-		// This Square is red, white, blue, and red.
-		final float[] squareVerticesData = {
-				// X, Y, Z, 
-	            0.5f, -0.5f, 0.0f, 	// LR
-	            -0.5f, -0.5f, 0.0f,	// LL
-	            0.5f, 0.5f, 0.0f,	// UR
-	            -0.5f, 0.5f, 0.0f,	// UL
-	            // R, G, B, A
-	            0.7f, 0.4f, 0.25f, 1.0f //RBGA
-	     };
-		
-		final float[] texMapData = {
-				//Lower-Right
-				3*TILE_SIZE, 2*TILE_SIZE,
-				//Lower-Left
-				TILE_SIZE, 2*TILE_SIZE,
-				//Upper-Right
-				3*TILE_SIZE, 0.0f,
-				//Upper-Left
-				TILE_SIZE, 0.0f
-		};
-				
-		// Initialize the buffers.
-		mSquareVertices = ByteBuffer.allocateDirect(squareVerticesData.length * mBytesPerFloat)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mTextureMapData = ByteBuffer.allocateDirect(texMapData.length * mBytesPerFloat)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		// Put data into buffer and return to start of buffer
-		mSquareVertices.put(squareVerticesData).position(0);
-		mTextureMapData.put(texMapData).position(0);
 
 		// Setup stuff
+		test_tile = new Tile();
 		mRes = res;
 	}
 	
@@ -128,10 +60,29 @@ public class GameRenderer implements Renderer {
 		// Redraw background color
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 		
-		// Draw the triangle facing straight on.
+		// Reset Model Matrix
         Matrix.setIdentityM(mModelMatrix, 0);
-        drawSquare(mSquareVertices,mTextureMapData);
         
+        // Set the active texture unit to texture unit 0.
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+     
+        // Bind the texture to this unit.
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTilesetHandle[0]);
+     
+        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+        GLES20.glUniform1i(mTextureUniformHandle, 0);
+        
+        //Try to move camera
+        Matrix.translateM(mProjectionMatrix, 0, mProjectionMatrix, 0, 0, 0, -0.01f);
+        
+		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
+        // multiply MVP Matrix (which currently contains model * view) by the projection Matrix then store in MVP
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        //Pass in MVP
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        
+        test_tile.draw(mProgramHandle);
 	}	
 
 	@Override
@@ -143,14 +94,13 @@ public class GameRenderer implements Renderer {
 		
 		// Create a new perspective projection matrix. The height will stay the same
 		// while the width will vary as per aspect ratio.
-		final float zoom = 3.0f;
-		final float ratio = (float) width / (height*zoom);
+		final float ratio = (float) width / height;
 		final float left = -ratio;
 		final float right = ratio;
-		final float bottom = -1.0f/zoom;
-		final float top = 1.0f/zoom;
+		final float bottom = -1.0f;
+		final float top = 1.0f;
 		final float near = 1.0f;
-		final float far = 2.0f;
+		final float far = 8.0f;
 		
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 	}
@@ -184,12 +134,12 @@ public class GameRenderer implements Renderer {
 		// view matrix. In OpenGL 2, we can keep track of these matrices separately if we choose.
 		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
 		
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
 		// Set Tileset texture
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inScaled = false;
 		opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-		
-		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		mTilesetHandle = new int[1];
 		GLES20.glGenTextures(1, mTilesetHandle, 0);
@@ -261,91 +211,45 @@ public class GameRenderer implements Renderer {
 		}
 		
 		// Create a program object and store the handle to it.
-		int programHandle = GLES20.glCreateProgram();
+		mProgramHandle = GLES20.glCreateProgram();
 		
-		if (programHandle != 0) 
+		if (mProgramHandle != 0) 
 		{
 			// Bind the vertex shader to the program.
-			GLES20.glAttachShader(programHandle, vertexShaderHandle);			
+			GLES20.glAttachShader(mProgramHandle, vertexShaderHandle);			
 
 			// Bind the fragment shader to the program.
-			GLES20.glAttachShader(programHandle, fragmentShaderHandle);
+			GLES20.glAttachShader(mProgramHandle, fragmentShaderHandle);
 			
 			// Bind attributes
-			GLES20.glBindAttribLocation(programHandle, 0, "a_Position");
-			GLES20.glBindAttribLocation(programHandle, 1, "a_TexCoord");
+			GLES20.glBindAttribLocation(mProgramHandle, 0, "a_Position");
+			GLES20.glBindAttribLocation(mProgramHandle, 1, "a_TexCoord");
 			
 			// Link the two shaders together into a program.
-			GLES20.glLinkProgram(programHandle);
+			GLES20.glLinkProgram(mProgramHandle);
 
 			// Get the link status.
 			final int[] linkStatus = new int[1];
-			GLES20.glGetProgramiv(programHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
+			GLES20.glGetProgramiv(mProgramHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
 
 			// If the link failed, delete the program.
 			if (linkStatus[0] == 0) 
 			{				
-				GLES20.glDeleteProgram(programHandle);
-				programHandle = 0;
+				GLES20.glDeleteProgram(mProgramHandle);
+				mProgramHandle = 0;
 			}
 		}
 		
-		if (programHandle == 0)
+		if (mProgramHandle == 0)
 		{
 			throw new RuntimeException("Error creating program.");
 		}
         
         // Set program handles. These will later be used to pass in values to the program.
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(programHandle, "u_MVPMatrix");        
-        mPositionHandle = GLES20.glGetAttribLocation(programHandle, "a_Position");
-        mColorHandle = GLES20.glGetUniformLocation(programHandle, "u_Color");
-      	mTextureUniformHandle = GLES20.glGetUniformLocation(programHandle, "u_Texture");
-      	mTextureCoordinateHandle = GLES20.glGetAttribLocation(programHandle, "a_TexCoord");
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");        
+      	mTextureUniformHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Texture");
         
         // Tell OpenGL to use this program when rendering.
-        GLES20.glUseProgram(programHandle);
-	}
-
-	/**
-	 * Draws a Square from the given vertex data.
-	 * 
-	 * @param aSquareBuffer The buffer containing the vertex data.
-	 */
-	private void drawSquare(final FloatBuffer aSquareBuffer, final FloatBuffer aTexCoordBuffer)
-	{		
-		// Pass in the position information
-		aSquareBuffer.position(mPositionOffset);
-        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false,
-        		mStrideBytes, aSquareBuffer);              
-        GLES20.glEnableVertexAttribArray(mPositionHandle);        
-        
-        // Pass in the color information
-        aSquareBuffer.position(mColorOffset);       
-        GLES20.glUniform4fv(mColorHandle, 0, aSquareBuffer);
-        
-        // Pass in texture data and pos
-        aTexCoordBuffer.position(0);
-        GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mTextureCoordinateDataSize,GLES20.GL_FLOAT,false,0,aTexCoordBuffer);
-        GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
-        
-        // Set the active texture unit to texture unit 0.
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-     
-        // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTilesetHandle[0]);
-     
-        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-        GLES20.glUniform1i(mTextureUniformHandle, 0);
-        
-		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
-        // (which currently contains model * view).
-        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
-        
-        // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
-        // (which now contains model * view * projection).
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);                               
+        GLES20.glUseProgram(mProgramHandle);
 	}
 }
