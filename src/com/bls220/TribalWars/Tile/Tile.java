@@ -15,36 +15,35 @@ public class Tile {
 	private final FloatBuffer mTextureMapData; /** Texture mapping data */
 	static private final int mColorOffset = 12; /** Offset to Color info in SquareData */
 	static private final int mPositionDataSize = 3; /** Dimension of position */
+	
+	static private final float[] defaultSquareData = {
+		// X, Y, Z, 
+		0.5f, 0.5f, 0.0f,	// UR
+        -0.5f, 0.5f, 0.0f,	// UL
+        0.5f, -0.5f, 0.0f, 	// LR
+        -0.5f, -0.5f, 0.0f,	// LL
+        
+        // R, G, B, A
+        1.0f, 1.0f, 1.0f, 1.0f //Solid White
+	};
 
 	public Tile(){
-		final float[] squareData = {
-				// X, Y, Z, 
-	            0.5f, -0.5f, 0.0f, 	// LR
-	            -0.5f, -0.5f, 0.0f,	// LL
-	            0.5f, 0.5f, 0.0f,	// UR
-	            -0.5f, 0.5f, 0.0f,	// UL
-	            // R, G, B, A
-	            1.0f, 1.0f, 1.0f, 1.0f //RBGA
-	     };
 		
 		final float[] texMapData = {
-				//Lower-Right
-				3*TILE_SIZE, 2*TILE_SIZE,
-				//Lower-Left
-				TILE_SIZE, 2*TILE_SIZE,
-				//Upper-Right
-				3*TILE_SIZE, 0.0f,
-				//Upper-Left
-				TILE_SIZE, 0.0f
+				// X, Y
+				3*TILE_SIZE, 0.0f,			// UR
+				TILE_SIZE, 0.0f,			// UL
+				3*TILE_SIZE, 2*TILE_SIZE,	// LR
+				TILE_SIZE, 2*TILE_SIZE,		// LL
 		};
 				
 		// Initialize the buffers.
-		mSquareData = ByteBuffer.allocateDirect(squareData.length * 4)
+		mSquareData = ByteBuffer.allocateDirect(defaultSquareData.length * 4)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mTextureMapData = ByteBuffer.allocateDirect(texMapData.length * 4)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		// Put data into buffer and return to start of buffer
-		mSquareData.put(squareData).position(0);
+		mSquareData.put(defaultSquareData).position(0);
 		mTextureMapData.put(texMapData).position(0);
 	}
 	

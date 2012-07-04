@@ -28,6 +28,7 @@ public class GameView extends GLSurfaceView
 	{
 		// Create an OpenGL ES 2.0 context
 		setEGLContextClientVersion(2);
+		setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
 		mRenderer = new GameRenderer(res);
 		this.setRenderer(mRenderer);
 		mLogicThread = new GameThread(this);		

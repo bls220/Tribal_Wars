@@ -78,7 +78,7 @@ public class GameRenderer implements Renderer {
         GLES20.glUniform1i(mTextureUniformHandle, 0);
         
         //Try to move camera
-        Matrix.translateM(mProjectionMatrix, 0, mProjectionMatrix, 0, 0, 0, -0.01f);
+        //Matrix.translateM(mProjectionMatrix, 0, mProjectionMatrix, 0, 0, 0, -0.01f);
         
 		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
         // multiply MVP Matrix (which currently contains model * view) by the projection Matrix then store in MVP
@@ -119,6 +119,7 @@ public class GameRenderer implements Renderer {
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		// Set background color to gray
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		
