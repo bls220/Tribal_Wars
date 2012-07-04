@@ -1,5 +1,8 @@
 package com.bls220.TribalWars;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +12,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class Tribal_Wars extends Activity
 {
-	private GameView mGame;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -24,17 +27,21 @@ public class Tribal_Wars extends Activity
         //Hide Status Bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //Set Main view
-        //LinearLayout mainLayout = new LinearLayout(this);
-        //mainLayout.setOrientation(LinearLayout.HORIZONTAL);
-        //mainLayout.setGravity(Gravity.FILL);
-        //mainLayout.setWeightSum(10.0f);        
-        //add views to main view
-        	//gameView
-        //mGame = new GameView(this);
-        //mainLayout.addView(mGame, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 9.0f));
-        	//sideMenu
-        //LayoutInflater.from(this).inflate(R.layout.side_menu, mainLayout, true);
         setContentView(R.layout.game);
+        
+        final TextView mFpsView = (TextView) findViewById(R.id.fpsView);
+        final GameView mGame = (GameView) findViewById(R.id.gameView);
+        Timer timer = new Timer();
+        TimerTask updatefps = new TimerTask(){
+        	public void run(){
+	        	mFpsView.post(new Runnable(){
+	        		public void run(){
+	        			mFpsView.setText("FPS: " + mGame.mRenderer.mFps); 
+	        		}
+	        	});
+        	}
+		};
+		timer.schedule(updatefps, 1000, 1000);
     }
     
     @Override

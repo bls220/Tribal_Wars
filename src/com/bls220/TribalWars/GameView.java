@@ -9,7 +9,8 @@ public class GameView extends GLSurfaceView
 {
 	public static int mCurZ;
 	
-	private GameRenderer mRenderer;
+	public GameRenderer mRenderer;
+	GameThread mLogicThread;
 	
 	public GameView(Context context)
 	{
@@ -29,8 +30,9 @@ public class GameView extends GLSurfaceView
 		setEGLContextClientVersion(2);
 		mRenderer = new GameRenderer(res);
 		this.setRenderer(mRenderer);
+		mLogicThread = new GameThread(this);		
 	}
-
+	
 //	@Override
 //	public void surfaceDestroyed(SurfaceHolder holder)
 //	{

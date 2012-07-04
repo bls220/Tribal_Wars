@@ -10,6 +10,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.widget.TextView;
 
 import com.bls220.TribalWars.Tile.Tile;
 
@@ -45,6 +46,9 @@ public class GameRenderer implements Renderer {
 	
 	private int mProgramHandle; /** Handle to compiled shader */
 	
+	private long mTimeSinceLastDraw = 0;
+	public int mFps = 0;
+	
 	private Tile test_tile;
 	
 	public GameRenderer(Resources res){
@@ -53,6 +57,7 @@ public class GameRenderer implements Renderer {
 		// Setup stuff
 		test_tile = new Tile();
 		mRes = res;
+		mTimeSinceLastDraw = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -83,6 +88,9 @@ public class GameRenderer implements Renderer {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         
         test_tile.draw(mProgramHandle);
+        long now = System.currentTimeMillis();
+        mFps = (int) (1000f/(now - mTimeSinceLastDraw));
+        mTimeSinceLastDraw = now;
 	}	
 
 	@Override
@@ -108,7 +116,7 @@ public class GameRenderer implements Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		//Enable/Disable Features
-		//GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		// Set background color to gray
