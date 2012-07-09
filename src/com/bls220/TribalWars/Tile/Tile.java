@@ -5,36 +5,43 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
 
 public class Tile {
 	
-	protected static final float TILE_SIZE = 0.0625f; /** 512/32 = 16 tile/row -> 1/16 = 0.0625 row/tile */
+	public static final float TILE_SIZE = 0.0625f; /** 512/32 = 16 tile/row -> 1/16 = 0.0625 row/tile */
 	public boolean isPassable = true;
 	
 	private final FloatBuffer mSquareData; /** Store our model data in a float buffer. */
 	private final FloatBuffer mTextureMapData; /** Texture mapping data */
-	static private final int mColorOffset = 12; /** Offset to Color info in SquareData */
-	static private final int mPositionDataSize = 3; /** Dimension of position */
 	
 	static private final float[] defaultSquareData = {
 		// X, Y, Z, 
-		0.5f, 0.5f, 0.0f,	// UR
-        -0.5f, 0.5f, 0.0f,	// UL
-        0.5f, -0.5f, 0.0f, 	// LR
-        -0.5f, -0.5f, 0.0f,	// LL
+		0,1,//LL
+		0,0,//UL
+		1,1,//LR
+		1,1,//LR
+		0,0,//UL
+		1,0,//UR
+		
         
         // R, G, B, A
-        1.0f, 1.0f, 1.0f, 1.0f //Solid White
+        0.0f, 1.0f, 1.0f, 1.0f //Solid White
 	};
+	
+	static private final int mPositionDataSize = 2; /** Dimension of position */
+	static private final int mColorOffset = mPositionDataSize*6; /** Offset to Color info in SquareData */
 
-	public Tile(){
+	public Tile(){ //TODO: Make Abstract
 		
 		final float[] texMapData = {
 				// X, Y
-				3*TILE_SIZE, 0.0f,			// UR
-				TILE_SIZE, 0.0f,			// UL
-				3*TILE_SIZE, 2*TILE_SIZE,	// LR
-				TILE_SIZE, 2*TILE_SIZE,		// LL
+				TILE_SIZE	,0,			//LL
+				TILE_SIZE	,TILE_SIZE,	//UL
+				2*TILE_SIZE	,0,			//LR
+				2*TILE_SIZE	,0,			//LR
+				TILE_SIZE	,TILE_SIZE,	//UL
+				2*TILE_SIZE	,TILE_SIZE,	//UR
 		};
 				
 		// Initialize the buffers.
@@ -49,7 +56,7 @@ public class Tile {
 	
 	public final void draw(final int mShader){
 		//Allow Object specific additions
-		//onDraw();
+		onDraw();
 		
 		//Do constant draw setup
 		//	Pass in the position information
@@ -70,8 +77,19 @@ public class Tile {
         GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
         
 		//Do Render
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
 	};
 	
-	//protected abstract void onDraw();
+	public final void update(){
+		//Do Object specific updates
+		onUpdate();
+		//Update tile placement data
+		for(int i = 0;i<mColorOffset; i+=mPositionDataSize){
+			
+		}
+		
+	};
+	
+	protected void onDraw(){}; //TODO: Make Abstract
+	protected void onUpdate(){}; //TODO: Make Abstract
 }

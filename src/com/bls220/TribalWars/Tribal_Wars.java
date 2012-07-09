@@ -41,7 +41,7 @@ public class Tribal_Wars extends Activity
 	        	});
         	}
 		};
-		timer.schedule(updatefps, 1000, 1000);
+		timer.schedule(updatefps, 1, 500);
     }
     
     @Override

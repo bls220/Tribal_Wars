@@ -1,19 +1,15 @@
 package com.bls220.TribalWars;
 
-import android.widget.TextView;
-
 public class GameThread extends Thread
 {
 	private boolean mRun = true;
 	//private Map mMap;
-	private GameView mGame;
-	private TextView mFpsView;
+	private final GameView mGame;
 
 	GameThread( GameView gameView )
 	{
 		//mMap = new Map();
 		mGame = gameView;
-		mFpsView = (TextView) gameView.findViewById(R.id.fpsView);
 	}
 
 	public void setRunning( boolean value )
@@ -24,20 +20,19 @@ public class GameThread extends Thread
 	@Override
 	public void run()
 	{
-		//this.setRunning(true);
+		this.setRunning(true);
 		//mMap.generateMap();
 		while (mRun)
 		{ 
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//We don't care about the interrupting cow...
 			}
 		}
 	}
 	
-	public void doUpdate()
+	public void update()
 	{
 		//TODO: Update entities
 	}
