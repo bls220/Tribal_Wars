@@ -13,7 +13,7 @@ public class Tile {
 	public boolean isPassable = true;
 	
 	private final FloatBuffer mSquareData; /** Store our model data in a float buffer. */
-	private final FloatBuffer mTextureMapData; /** Texture mapping data */
+	public final FloatBuffer mTextureMapData; /** Texture mapping data */
 	
 	static private final float[] defaultSquareData = {
 		// X, Y, Z, 

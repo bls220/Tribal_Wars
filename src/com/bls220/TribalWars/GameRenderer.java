@@ -10,6 +10,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+
 import com.bls220.TribalWars.Tile.Tile;
 
 public class GameRenderer implements Renderer {
@@ -48,6 +49,7 @@ public class GameRenderer implements Renderer {
 	public int mFps = 0;
 	
 	private Tile test_tile;
+	private Map test_map;
 	
 	public GameRenderer(Resources res){
 		super();
@@ -76,7 +78,8 @@ public class GameRenderer implements Renderer {
         GLES20.glUniform1i(mTextureUniformHandle, 0);
         
         //Try to move camera
-        //Matrix.translateM(mViewMatrix, 0, mViewMatrix, 0, 0, 0, 0);
+        //Matrix.setIdentityM(mViewMatrix,0);
+        //Matrix.translateM(mViewMatrix, 0, mViewMatrix, 0, -0.0f, -0.0f, 0);
         
 		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
         // multiply MVP Matrix (which currently contains model * view) by the projection Matrix then store in MVP
@@ -86,6 +89,8 @@ public class GameRenderer implements Renderer {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         
         test_tile.draw(mProgramHandle);
+        test_map.draw(mProgramHandle);
+      			
         long now = System.currentTimeMillis();
 
         mFps = (int) (1000f/(now - mTimeSinceLastDraw));
@@ -114,8 +119,9 @@ public class GameRenderer implements Renderer {
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		test_map = new Map();
 		//Enable/Disable Features
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		//GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_DITHER);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -123,13 +129,13 @@ public class GameRenderer implements Renderer {
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		
 		// Position the eye behind the origin.
-		final float eyeX = 0.0f;
-		final float eyeY = 0.0f;
+		final float eyeX = 1.0f;
+		final float eyeY = 1.0f;
 		final float eyeZ = 1.5f;
 
 		// We are looking toward the distance
-		final float lookX = 0.0f;
-		final float lookY = 0.0f;
+		final float lookX = 1.0f;
+		final float lookY = 1.0f;
 		final float lookZ = -5.0f;
 
 		// Set our up vector. This is where our head would be pointing were we holding the camera.
@@ -158,9 +164,9 @@ public class GameRenderer implements Renderer {
 		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, img, 0);
 		img.recycle();
 		
-		final String vertexShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.vert_shader);
+		final String vertexShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.basic_vert_shader);
 			
-		final String fragmentShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.frag_shader);												
+		final String fragmentShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.basic_frag_shader);												
 			
 		// Load in the vertex shader.
 		int vertexShaderHandle = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
