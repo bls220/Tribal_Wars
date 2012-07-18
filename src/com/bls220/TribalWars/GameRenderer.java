@@ -124,7 +124,7 @@ public class GameRenderer implements Renderer {
 		//GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_DITHER);
 		GLES20.glEnable(GLES20.GL_BLEND);
-		//GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glDisable(GLES20.GL_CULL_FACE);
 		// Set background color to gray
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		

@@ -73,7 +73,7 @@ public class Tile {
         // Pass in texture map position
         final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");
         mTextureMapData.position(0);
-        GLES20.glVertexAttribPointer(mTextureCoordinateHandle,2,GLES20.GL_FLOAT,false,0,mTextureMapData);
+        GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0,mTextureMapData);
         GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
         
 		//Do Render
