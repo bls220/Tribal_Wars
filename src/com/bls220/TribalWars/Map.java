@@ -19,14 +19,15 @@ public class Map
 	//public static final int TILE_SIZE = 32;
 	
 	//Map Size Consts -- Do Not Exceed 180x180xZ
-	final int MAP_SIZE_X = 2;
-	final int MAP_SIZE_Y = 2;
+	final int MAP_SIZE_X = 1;
+	final int MAP_SIZE_Y = 1;
 	final int MAP_SIZE_Z = 54;
 	
 	private ETile[][][] mMap; //The map
 	private final FloatBuffer mPlaneVertBuffer;
 	private final ShortBuffer mPlaneIndBuffer;
-	private final int[] mBufferHandles = new int[2];
+	private final FloatBuffer mTextureBuffer;
+	private final int[] mPlaneBufferHandles = new int[2];
 	public static final int mPositionDataSize = 2;
 	
 	Map()
@@ -41,6 +42,7 @@ public class Map
 		//VBO_Size = vertCount*mPositionDataSize*4BytesPerFloat
 		mPlaneVertBuffer = ByteBuffer.allocateDirect(vertCount*mPositionDataSize*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mPlaneIndBuffer = ByteBuffer.allocateDirect(indexCount*2).order(ByteOrder.nativeOrder()).asShortBuffer();
+		mTextureBuffer = ByteBuffer.allocateDirect(indexCount*mPositionDataSize*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		
 		//Create Vertices
 		mPlaneVertBuffer.position(0);
@@ -70,8 +72,23 @@ public class Map
 			mPlaneIndBuffer.put(ind);
 		}
 		
+		//Build Texture Mapping
+		final float[] texMapData = {
+				// X, Y
+				Tile.TILE_SIZE	,Tile.TILE_SIZE,	//UL
+				Tile.TILE_SIZE	,0,					//LL
+				2*Tile.TILE_SIZE	,0,				//LR
+				Tile.TILE_SIZE	,Tile.TILE_SIZE,	//UL
+				2*Tile.TILE_SIZE	,0,				//LR
+				2*Tile.TILE_SIZE	,Tile.TILE_SIZE,//UR
+		};
+		mTextureBuffer.position(0);
+		for( int i=0; i<numSquares; i++){
+			mTextureBuffer.put(texMapData);
+		}
+		
 		//Generate handles for the buffers
-		GLES20.glGenBuffers(2, mBufferHandles ,0);
+		GLES20.glGenBuffers(2, mPlaneBufferHandles ,0);
 		
 		//Bind and Load buffers
 			//Plane VBO
@@ -123,7 +140,9 @@ public class Map
 	        
 	        // Pass in texture map position
 	        final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");
-	        GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
+	        mTextureBuffer.position(0);
+	        GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0,mTextureBuffer);
+	        GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 	        
 	        // Bind IBO
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, getIBO());
@@ -135,6 +154,6 @@ public class Map
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	public int getVBO(){ return mBufferHandles[0]; }
-	public int getIBO(){ return mBufferHandles[1]; }
+	public int getVBO(){ return mPlaneBufferHandles[0]; }
+	public int getIBO(){ return mPlaneBufferHandles[1]; }
 }

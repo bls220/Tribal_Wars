@@ -48,14 +48,14 @@ public class GameRenderer implements Renderer {
 	private long mTimeSinceLastDraw = 0;
 	public int mFps = 0;
 	
-	private Tile test_tile;
+	//private Tile test_tile;
 	private Map test_map;
 	
 	public GameRenderer(Resources res){
 		super();
 
 		// Setup stuff
-		test_tile = new Tile();
+		//test_tile = new Tile();
 		mRes = res;
 		mTimeSinceLastDraw = System.currentTimeMillis();
 	}
@@ -78,8 +78,7 @@ public class GameRenderer implements Renderer {
         GLES20.glUniform1i(mTextureUniformHandle, 0);
         
         //Try to move camera
-        //Matrix.setIdentityM(mViewMatrix,0);
-        //Matrix.translateM(mViewMatrix, 0, mViewMatrix, 0, -0.0f, -0.0f, 0);
+        //Matrix.translateM(mViewMatrix, 0, mViewMatrix, 0, 0, 0, -1.0f);
         
 		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
         // multiply MVP Matrix (which currently contains model * view) by the projection Matrix then store in MVP
@@ -88,8 +87,9 @@ public class GameRenderer implements Renderer {
         //Pass in MVP
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         
-        test_tile.draw(mProgramHandle);
         test_map.draw(mProgramHandle);
+        //test_tile.draw(mProgramHandle);
+        
       			
         long now = System.currentTimeMillis();
 
@@ -112,7 +112,7 @@ public class GameRenderer implements Renderer {
 		final float bottom = -1.0f;
 		final float top = 1.0f;
 		final float near = 1.0f;
-		final float far = 8.0f;
+		final float far = 180.0f;
 		
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 	}
@@ -124,18 +124,20 @@ public class GameRenderer implements Renderer {
 		//GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_DITHER);
 		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		//GLES20.glEnable(GLES20.GL_CULL_FACE);
 		// Set background color to gray
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		
+		float camPosX = test_map.MAP_SIZE_X/2;
+		float camPosY = test_map.MAP_SIZE_Y/2;
 		// Position the eye behind the origin.
-		final float eyeX = 1.0f;
-		final float eyeY = 1.0f;
+		final float eyeX = camPosX;
+		final float eyeY = camPosY;
 		final float eyeZ = 1.5f;
 
 		// We are looking toward the distance
-		final float lookX = 1.0f;
-		final float lookY = 1.0f;
+		final float lookX = camPosX;
+		final float lookY = camPosY;
 		final float lookZ = -5.0f;
 
 		// Set our up vector. This is where our head would be pointing were we holding the camera.
@@ -164,9 +166,9 @@ public class GameRenderer implements Renderer {
 		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, img, 0);
 		img.recycle();
 		
-		final String vertexShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.basic_vert_shader);
+		final String vertexShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.vert_shader);
 			
-		final String fragmentShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.basic_frag_shader);												
+		final String fragmentShader = RawResourceReader.readTextFileFromRawResource(mRes, R.raw.frag_shader);												
 			
 		// Load in the vertex shader.
 		int vertexShaderHandle = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);

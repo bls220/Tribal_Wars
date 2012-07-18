@@ -9,6 +9,6 @@ void main(){
 	gl_FragColor = texture2D(u_Texture, v_TexCoord);
 	
 	//if pixel is pure gray-scale overlay color
-	if( gl_FragColor.rb == gl_FragColor.bg ) 
-		gl_FragColor *= v_Color;		
+	//if( gl_FragColor.rb == gl_FragColor.bg ) 
+		//gl_FragColor *= v_Color;		
 }
