@@ -41,7 +41,7 @@ public class Tile {
 				2*TILE_SIZE	,0,			//LR
 				2*TILE_SIZE	,0,			//LR
 				TILE_SIZE	,TILE_SIZE,	//UL
-				2*TILE_SIZE	,TILE_SIZE,	//UR
+				2*TILE_SIZE	,TILE_SIZE	//UR
 		};
 				
 		// Initialize the buffers.

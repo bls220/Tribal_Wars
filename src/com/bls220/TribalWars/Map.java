@@ -19,9 +19,9 @@ public class Map
 	//public static final int TILE_SIZE = 32;
 
 	//Map Size Consts -- Do Not Exceed 180x180xZ
-	final int MAP_SIZE_X = 1;
-	final int MAP_SIZE_Y = 1;
-	final int MAP_SIZE_Z = 54;
+	final int MAP_SIZE_X = 2;
+	final int MAP_SIZE_Y = 2;
+	final int MAP_SIZE_Z = 5;
 
 	private ETile[][][] mMap; //The map
 	private final FloatBuffer mPlaneVertBuffer;
@@ -55,37 +55,37 @@ public class Map
 
 		//Build Indices
 		mPlaneIndBuffer.position(0);
+		mTextureBuffer.position(0);
 		for( int i=0,x=0,y=0,w=(MAP_SIZE_X+1); i<numSquares; i++,x++){
 			if( x == MAP_SIZE_X ){ y++; x=0;}
 			//	0	1	2
 			//	3	4	5
 			//	6	7	8
-			short[] ind = {
-					(short) (y*w+x),		//0 1  3 4
-					(short) ((y+1)*w+x),	//3 4  6 7
-					(short) ((y+1)*w+x+1),	//4 5  7 8
+			final short[] ind = {
+					(short) (y*w+x+1),		//UR	1 2  4 5
+					(short) (y*w+x),		//UL	0 1  3 4
+					(short) ((y+1)*w+x),	//LL	3 4  6 7
 
-					(short) (y*w+x),		//0 1  3 4
-					(short) ((y+1)*w+x+1),	//4 5  7 8
-					(short) (y*w+x+1)		//1 2  4 5
+					(short) ((y+1)*w+x),	//LL	3 4  6 7
+					(short) ((y+1)*w+x+1),	//LR	4 5  7 8
+					(short) (y*w+x+1)		//UR	1 2  4 5
 			};
+			
+			//Build Texture Mapping
+			float dx = x*0.0625f;
+			float dy = y*0.0625f;
+			final float[] texMapData = {
+					// X,Y
+					dx+0.0625f	,dy,			//UR
+					dx			,dy,			//UL
+					dx			,dy+0.0625f,	//LL
+					
+					dx			,dy+0.0625f,	//LL
+					dx+0.0625f	,dy+0.0625f,	//LR
+					dx+0.0625f	,dy				//UR			
+			};			
+			
 			mPlaneIndBuffer.put(ind);
-		}
-
-		//Build Texture Mapping
-		final float[] texMapData = {
-				// X, Y
-				
-				0.0f,		0.0625f,//LL
-				0.0f,		0.0f,//UL
-				0.0625f,	0.0625f,//LR
-
-				//0.0f,		0.0f,//UL
-				//0.0625f,	0.0625f,//LR
-				//0.0625f,	0.0f//UR
-		};
-		mTextureBuffer.position(0);
-		for( int i=0; i<numSquares; i++){
 			mTextureBuffer.put(texMapData);
 		}
 
@@ -148,14 +148,16 @@ public class Map
 		//Bind Texture VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mBufferHandles[2]);
 		// Pass in texture map position
+		mTextureBuffer.position(0);
 		final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");
-		GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0,0);
+		GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0, 0);
 		GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 
 		// Bind IBO
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, getIBO());
 		// Draw Plane
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, MAP_SIZE_X*MAP_SIZE_Y*3, GLES20.GL_UNSIGNED_SHORT, 0);
+		mPlaneIndBuffer.position(0);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, MAP_SIZE_X*MAP_SIZE_Y*6, GLES20.GL_UNSIGNED_SHORT, 0);
 
 		// Unbind buffers
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);

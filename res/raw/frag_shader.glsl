@@ -1,4 +1,4 @@
-precision highp float;			// Set the default precision to low. We don't need as high of a precision in the fragment shader.
+precision lowp float;			// Set the default precision to low. We don't need as high of a precision in the fragment shader.
 uniform sampler2D u_Texture;	// Texture
 
 varying vec4 v_Color;			// This is the color from the vertex shader interpolated per fragment.
