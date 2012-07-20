@@ -121,19 +121,19 @@ public class GameRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		test_map = new Map();
 		//Enable/Disable Features
-		//GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_DITHER);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		// Set background color to gray
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		
-		float camPosX = test_map.MAP_SIZE_X/2;
-		float camPosY = test_map.MAP_SIZE_Y/2;
+		float camPosX = 10;//test_map.MAP_SIZE_X/2;
+		float camPosY = 5;//test_map.MAP_SIZE_Y/2;
 		// Position the eye behind the origin.
 		final float eyeX = camPosX;
 		final float eyeY = camPosY;
-		final float eyeZ = 1.5f;
+		final float eyeZ = camPosY;
 
 		// We are looking toward the distance
 		final float lookX = camPosX;
