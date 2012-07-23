@@ -17,8 +17,8 @@ import com.bls220.TribalWars.Tile.Tile;
 public class Map
 {
 	//Map Size Consts -- Do Not Exceed 180x180xZ
-	final int MAP_SIZE_X = 60;
-	final int MAP_SIZE_Y = 30;
+	final int MAP_SIZE_X = 120;
+	final int MAP_SIZE_Y = 120;
 	final int MAP_SIZE_Z = 5;
 
 	private ETile[][][] mMap; //The map
