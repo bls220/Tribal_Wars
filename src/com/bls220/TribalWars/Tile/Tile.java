@@ -12,23 +12,8 @@ public class Tile {
 	public static final float TILE_SIZE = 0.0625f; /** 512/32 = 16 tile/row -> 1/16 = 0.0625 row/tile */
 	public boolean isPassable = true;
 	
-	private final FloatBuffer mSquareData; /** Store our model data in a float buffer. */
 	public final FloatBuffer mTextureMapData; /** Texture mapping data */
-	
-	static private final float[] defaultSquareData = {
-		// X, Y, Z, 
-		0,1,//LL
-		0,0,//UL
-		1,1,//LR
-		1,1,//LR
-		0,0,//UL
-		1,0,//UR
-		
-        
-        // R, G, B, A
-        0.0f, 1.0f, 1.0f, 1.0f //Solid White
-	};
-	
+
 	static private final int mPositionDataSize = 2; /** Dimension of position */
 	static private final int mColorOffset = mPositionDataSize*6; /** Offset to Color info in SquareData */
 
@@ -45,12 +30,9 @@ public class Tile {
 		};
 				
 		// Initialize the buffers.
-		mSquareData = ByteBuffer.allocateDirect(defaultSquareData.length * 4)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mTextureMapData = ByteBuffer.allocateDirect(texMapData.length * 4)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		// Put data into buffer and return to start of buffer
-		mSquareData.put(defaultSquareData).position(0);
 		mTextureMapData.put(texMapData).position(0);
 	}
 	
@@ -61,16 +43,15 @@ public class Tile {
 		//Do constant draw setup
 		//	Pass in the position information
 		final int mPositionHandle = GLES20.glGetAttribLocation(mShader, "a_Position");
-		mSquareData.position(0);
-        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mSquareData);              
+		//mSquareData.position(0);
+        //GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mSquareData);              
         GLES20.glEnableVertexAttribArray(mPositionHandle);        
         
         //	Pass in the color information
         final int mColorHandle = GLES20.glGetUniformLocation(mShader, "u_Color");
-        mSquareData.position(mColorOffset);
-        GLES20.glUniform4fv(mColorHandle, 0, mSquareData);
+        GLES20.glUniform4f(mColorHandle, 1, 1, 1, 1);
         
-        // Pass in texture map position
+        // Pass in texture map coords
         final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");
         mTextureMapData.position(0);
         GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0,mTextureMapData);

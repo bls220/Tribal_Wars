@@ -14,6 +14,8 @@ import com.bls220.TribalWars.Tile.ETile;
 import com.bls220.TribalWars.Tile.Tile;
 
 
+//Array of Tile Lists
+
 public class Map
 {
 	//Map Size Consts -- Do Not Exceed 180x180xZ
