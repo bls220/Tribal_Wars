@@ -18,9 +18,9 @@ import com.bls220.TribalWars.Tile.Tile;
 
 public class Map
 {
-	//Map Size Consts -- Do Not Exceed 180x180xZ
-	final int MAP_SIZE_X = 120;
-	final int MAP_SIZE_Y = 120;
+	//Map Size Consts
+	final int MAP_SIZE_X = 200;
+	final int MAP_SIZE_Y = 200;
 	final int MAP_SIZE_Z = 5;
 
 	private ETile[][][] mMap; //The map
@@ -52,7 +52,7 @@ public class Map
 						x+1	,y,		//LR
 						x+1	,y+1	//UR			
 				};
-				
+
 				//Build Texture Mapping
 				float tx = 1*Tile.TILE_SIZE;
 				float ty = 0*Tile.TILE_SIZE;
@@ -66,7 +66,7 @@ public class Map
 						tx+Tile.TILE_SIZE	,ty+Tile.TILE_SIZE,	//LR
 						tx+Tile.TILE_SIZE	,ty				//UR			
 				};
-				
+
 				mPlaneVertBuffer.put(vertData);
 				mTexVertBuffer.put(texMapData);
 			}
@@ -79,7 +79,7 @@ public class Map
 		//Texture VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
 		mTexVertBuffer.position(0);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.capacity()*4, mTexVertBuffer, GLES20.GL_STATIC_DRAW);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.capacity()*4, mTexVertBuffer, GLES20.GL_DYNAMIC_DRAW);
 		//Plane VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getPlaneVBO());
 		mPlaneVertBuffer.position(0);
@@ -87,6 +87,26 @@ public class Map
 		//Unbind Buffers
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
+
+		mTexVertBuffer.position(0);
+		for( int y=MAP_SIZE_Y-1; y >= 0; y--){
+			for( int x=0; x < MAP_SIZE_X; x++){
+				float tx = 1*Tile.TILE_SIZE;
+				float ty = 1*Tile.TILE_SIZE;
+				final float[] texMapData = {
+						// X,Y
+						tx+Tile.TILE_SIZE	,ty,			//UR
+						tx			,ty,			//UL
+						tx			,ty+Tile.TILE_SIZE,	//LL
+
+						tx			,ty+Tile.TILE_SIZE,	//LL
+						tx+Tile.TILE_SIZE	,ty+Tile.TILE_SIZE,	//LR
+						tx+Tile.TILE_SIZE	,ty				//UR			
+				};
+				mTexVertBuffer.put(texMapData);
+			}
+		}
+		mTexVertBuffer.position(0);
 	}
 
 	public void setTile(ETile tile, int X, int Y, int Z)
@@ -112,18 +132,25 @@ public class Map
 
 	public void draw(final int mShader){
 
+		//Texture VBO
 		//Bind Texture VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
+		for( int i=0; i<400; i++){
+			GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.position()*4, 12*4, mTexVertBuffer);
+			int newpos = mTexVertBuffer.position()+12;
+			if( newpos >= mTexVertBuffer.capacity() ) newpos = 0;
+			mTexVertBuffer.position(newpos);
+		}
 		// Pass in texture map position
-		mTexVertBuffer.position(0);
+		//mTexVertBuffer.position(0);
 		final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");
 		GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0, 0);
 		GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
-		
+
 		// Bind VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getPlaneVBO());
 		// Pass in the position information
-		mPlaneVertBuffer.position(0);
+		//mPlaneVertBuffer.position(0);
 		final int mPositionHandle = GLES20.glGetAttribLocation(mShader, "a_Position");
 		GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, 0);              
 		GLES20.glEnableVertexAttribArray(mPositionHandle);

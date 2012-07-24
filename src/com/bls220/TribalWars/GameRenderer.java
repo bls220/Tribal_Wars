@@ -128,8 +128,8 @@ public class GameRenderer implements Renderer {
 		// Set background color to gray
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		
-		float camPosX = 10;//test_map.MAP_SIZE_X/2;
-		float camPosY = 5;//test_map.MAP_SIZE_Y/2;
+		float camPosX = test_map.MAP_SIZE_X/2;
+		float camPosY = test_map.MAP_SIZE_Y/2;
 		// Position the eye behind the origin.
 		final float eyeX = camPosX;
 		final float eyeY = camPosY;
