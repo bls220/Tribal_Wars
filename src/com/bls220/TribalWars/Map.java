@@ -25,7 +25,7 @@ public class Map
 
 	private ETile[][][] mMap; //The map
 	private final FloatBuffer mPlaneVertBuffer;
-	private final FloatBuffer mTexVertBuffer;
+	final FloatBuffer mTexVertBuffer;
 	private final int[] mBufferHandles = new int[3];
 	public static final int mPositionDataSize = 2;
 	private final int indexCount = MAP_SIZE_X * MAP_SIZE_Y * 6;
@@ -88,25 +88,25 @@ public class Map
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
 
-		mTexVertBuffer.position(0);
-		for( int y=MAP_SIZE_Y-1; y >= 0; y--){
-			for( int x=0; x < MAP_SIZE_X; x++){
-				float tx = 1*Tile.TILE_SIZE;
-				float ty = 1*Tile.TILE_SIZE;
-				final float[] texMapData = {
-						// X,Y
-						tx+Tile.TILE_SIZE	,ty,			//UR
-						tx			,ty,			//UL
-						tx			,ty+Tile.TILE_SIZE,	//LL
-
-						tx			,ty+Tile.TILE_SIZE,	//LL
-						tx+Tile.TILE_SIZE	,ty+Tile.TILE_SIZE,	//LR
-						tx+Tile.TILE_SIZE	,ty				//UR			
-				};
-				mTexVertBuffer.put(texMapData);
-			}
-		}
-		mTexVertBuffer.position(0);
+//		mTexVertBuffer.position(0);
+//		for( int y=MAP_SIZE_Y-1; y >= 0; y--){
+//			for( int x=0; x < MAP_SIZE_X; x++){
+//				float tx = 1*Tile.TILE_SIZE;
+//				float ty = 1*Tile.TILE_SIZE;
+//				final float[] texMapData = {
+//						// X,Y
+//						tx+Tile.TILE_SIZE	,ty,			//UR
+//						tx			,ty,			//UL
+//						tx			,ty+Tile.TILE_SIZE,	//LL
+//
+//						tx			,ty+Tile.TILE_SIZE,	//LL
+//						tx+Tile.TILE_SIZE	,ty+Tile.TILE_SIZE,	//LR
+//						tx+Tile.TILE_SIZE	,ty				//UR			
+//				};
+//				mTexVertBuffer.put(texMapData);
+//			}
+//		}
+//		mTexVertBuffer.position(0);
 	}
 
 	public void setTile(ETile tile, int X, int Y, int Z)
@@ -135,12 +135,12 @@ public class Map
 		//Texture VBO
 		//Bind Texture VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
-		for( int i=0; i<400; i++){
-			GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.position()*4, 12*4, mTexVertBuffer);
-			int newpos = mTexVertBuffer.position()+12;
-			if( newpos >= mTexVertBuffer.capacity() ) newpos = 0;
-			mTexVertBuffer.position(newpos);
-		}
+//		for( int i=0; i<400; i++){
+//			GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.position()*4, 12*4, mTexVertBuffer);
+//			int newpos = mTexVertBuffer.position()+12;
+//			if( newpos >= mTexVertBuffer.capacity() ) newpos = 0;
+//			mTexVertBuffer.position(newpos);
+//		}
 		// Pass in texture map position
 		//mTexVertBuffer.position(0);
 		final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");

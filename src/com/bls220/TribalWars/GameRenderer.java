@@ -49,14 +49,16 @@ public class GameRenderer implements Renderer {
 	public int mFps = 0;
 	
 	//private Tile test_tile;
-	private Map test_map;
+	Map test_map;
+	GameView mGameView;
 	
-	public GameRenderer(Resources res){
+	public GameRenderer(GameView gameView){
 		super();
 
 		// Setup stuff
 		//test_tile = new Tile();
-		mRes = res;
+		mGameView = gameView;
+		mRes = gameView.getContext().getResources();
 		mTimeSinceLastDraw = System.currentTimeMillis();
 	}
 	
@@ -267,5 +269,7 @@ public class GameRenderer implements Renderer {
         
         // Tell OpenGL to use this program when rendering.
         GLES20.glUseProgram(mProgramHandle);
+        
+        mGameView.onSurfaceCreated();
 	}
 }
