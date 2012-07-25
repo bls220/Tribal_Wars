@@ -59,7 +59,7 @@ public class GameRenderer implements Renderer {
 		//test_tile = new Tile();
 		mGameView = gameView;
 		mRes = gameView.getContext().getResources();
-		mTimeSinceLastDraw = System.currentTimeMillis();
+		mTimeSinceLastDraw = System.nanoTime();
 	}
 	
 	@Override
@@ -93,9 +93,9 @@ public class GameRenderer implements Renderer {
         //test_tile.draw(mProgramHandle);
         
       			
-        long now = System.currentTimeMillis();
-
-        mFps = (int) (1000f/(now - mTimeSinceLastDraw));
+        long now = System.nanoTime();
+        double elapsedMs = (now - mTimeSinceLastDraw) / 1.0e6;
+        mFps = (int) (1000f/elapsedMs);
         mTimeSinceLastDraw = now;
 	}	
 

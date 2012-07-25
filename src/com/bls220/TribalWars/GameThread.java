@@ -3,6 +3,7 @@ package com.bls220.TribalWars;
 import com.bls220.TribalWars.Tile.Tile;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 public class GameThread extends Thread
 {
@@ -21,31 +22,36 @@ public class GameThread extends Thread
 	{
 		mRun = value;
 	}
-	
+
 	@Override
 	public void run()
 	{
 		this.setRunning(true);
+		long startTime = System.nanoTime();
 		//mMap.generateMap();
 		while (mRun)
 		{ 
 			update();
 			count += 1;
 			count %=2;
+			long now = System.nanoTime();
+			double elapsedMs = (now - startTime) / 1.0e6;
+			Log.i("Tribal_Wars-Logic Thread", "ms: " + elapsedMs + " \t- fps: " + (1000 / elapsedMs));
+			startTime = now;
 			try {
-				Thread.sleep(250);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				//We don't care about the interrupting cow...
 			}
 		}
 	}
-	
+
 	public void update()
 	{
 		final Map map = mGame.mRenderer.test_map;
 		float tx = 1*Tile.TILE_SIZE;
 		float ty = count*Tile.TILE_SIZE;
-		final float[] texMapData = {
+		final float[] tileData = {
 				// X,Y
 				tx+Tile.TILE_SIZE	,ty,			//UR
 				tx			,ty,			//UL
@@ -55,20 +61,22 @@ public class GameThread extends Thread
 				tx+Tile.TILE_SIZE	,ty+Tile.TILE_SIZE,	//LR
 				tx+Tile.TILE_SIZE	,ty				//UR			
 		};
-		map.mTexVertBuffer.position(0);
-		for( int y=map.MAP_SIZE_Y-1; y >= map.MAP_SIZE_Y/2; y--){
-			for( int x=0; x < map.MAP_SIZE_X/4; x++){
-				map.mTexVertBuffer.put(texMapData);
+		float[] texMapData = new float[map.MAP_SIZE_X*map.MAP_SIZE_Y*12];
+		for( int y=0; y < map.MAP_SIZE_Y; y++){
+			for( int x=0; x < map.MAP_SIZE_X; x++){
+				int ind = x+y*map.MAP_SIZE_Y*12;
+				for( int i = 0; i<12; i++){
+						texMapData[ind+i] = tileData[i];
+				}
 			}
 		}
-		mGame.queueEvent( new Runnable(){
-			public void run(){
-				map.mTexVertBuffer.position(0);
-				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, map.getTexVBO());
-				GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, map.mTexVertBuffer.capacity()*4, map.mTexVertBuffer, GLES20.GL_DYNAMIC_DRAW);
-				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-			}
-		});
+		map.mTexVertBuffer.position(0);
+		map.mTexVertBuffer.put(texMapData);
+//		mGame.queueEvent( new Runnable(){
+//			public void run(){
+//				
+//			}
+//		});
 		//TODO: Update entities
 	}
 

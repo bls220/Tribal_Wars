@@ -77,9 +77,9 @@ public class Map
 
 		//Bind and Load buffers
 		//Texture VBO
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
-		mTexVertBuffer.position(0);
-		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.capacity()*4, mTexVertBuffer, GLES20.GL_DYNAMIC_DRAW);
+//		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
+//		mTexVertBuffer.position(0);
+//		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.capacity()*4, mTexVertBuffer, GLES20.GL_DYNAMIC_DRAW);
 		//Plane VBO
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getPlaneVBO());
 		mPlaneVertBuffer.position(0);
@@ -134,7 +134,7 @@ public class Map
 
 		//Texture VBO
 		//Bind Texture VBO
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
+		//GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, getTexVBO());
 //		for( int i=0; i<400; i++){
 //			GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, mTexVertBuffer.position()*4, 12*4, mTexVertBuffer);
 //			int newpos = mTexVertBuffer.position()+12;
@@ -142,9 +142,9 @@ public class Map
 //			mTexVertBuffer.position(newpos);
 //		}
 		// Pass in texture map position
-		//mTexVertBuffer.position(0);
+		mTexVertBuffer.position(0);
 		final int mTextureCoordinateHandle = GLES20.glGetAttribLocation(mShader, "a_TexCoord");
-		GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0, 0);
+		GLES20.glVertexAttribPointer(mTextureCoordinateHandle,mPositionDataSize,GLES20.GL_FLOAT,false,0, mTexVertBuffer);
 		GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 
 		// Bind VBO
@@ -164,6 +164,9 @@ public class Map
 		// Unbind buffers
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
 	}
 
 	public int getPlaneVBO(){ return mBufferHandles[0]; }
